@@ -1,3 +1,5 @@
 google-adk[db]==2.14.1
-litellm[mcp]==1.106.2
+litellm[mcp]==1.109.1
 python-dotenv==1.2.4
+# Security floor: filelock below 4.2.1 has known CVEs. LiteLLM 1.109.1 allows filelock<5.
+filelock>=4.2.1
