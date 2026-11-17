@@ -1,0 +1,49 @@
+name: Verify Company Assistant
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install --upgrade "pip>=26.2"
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pip check
+      - run: python -m ruff check .
+      - run: python -m ruff format --check .
+      - run: python -m pytest --cov=company_assistant --cov-branch --cov-report=xml --cov-fail-under=80
+      - name: Require 80 percent line coverage per source file
+        run: >-
+          python -c "import sys, xml.etree.ElementTree as ET; classes = ET.parse('coverage.xml').findall('.//class'); failures = [item.attrib['filename'] for item in classes if float(item.attrib['line-rate']) < 0.8]; print('Files below 80 percent:', failures); sys.exit(bool(failures))"
+      - name: Check changed-line coverage
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: diff-cover coverage.xml --compare-branch="origin/$BASE_REF" --fail-under=80
+
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --upgrade "pip>=26.2"
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pip_audit --progress-spinner off

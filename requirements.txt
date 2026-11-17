@@ -1,0 +1,3 @@
+google-adk[db]==2.14.1
+litellm[mcp]==1.106.2
+python-dotenv==1.2.4
