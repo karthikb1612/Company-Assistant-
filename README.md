@@ -233,7 +233,7 @@ tests/                  offline tests and the evaluation checklist
 .\.venv\Scripts\python.exe -m pip_audit --progress-spinner off
 ```
 
-Offline tests block network access. They use temporary SQLite files and scripted model responses through real ADK runners, and cover tool results, every permission combination, audit behavior, planning and delegation rules, scope-guard handling, the answer-format contract, and the model-resilience layer. Coverage must be at least 80%, and CI also checks per-file and changed-line coverage on Windows and Linux and runs a separate dependency audit. Nothing is deployed.
+Offline tests block network access. They use temporary SQLite files and scripted model responses through real ADK runners, and cover tool results, every permission combination, audit behavior, planning and delegation rules, scope-guard handling, the answer-format contract, and the model-resilience layer. Coverage must be at least 80%, and CI also checks per-file and changed-line coverage on Windows and Linux and runs a separate dependency audit. Both CI jobs use an isolated virtual environment, so `pip check` and the audit cover only this project's packages and not tools preinstalled on the runner. Nothing is deployed.
 
 Scripted tests cannot show how Cohere actually routes, plans, or classifies. For that:
 

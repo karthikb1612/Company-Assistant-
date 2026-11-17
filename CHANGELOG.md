@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fixed the CI `pip check` failure ("pipx 1.18.12 has requirement filelock>=4.2, but you have filelock 3.32.7"). Both CI jobs now install into an isolated virtual environment, so `pip check` and `pip-audit` examine only this project's dependencies and not tools preinstalled on the runner. The project's own set is consistent; `filelock` stays below 4 because the pinned LiteLLM requires it.
+
 - Added employee lookup by name (`find_employee`, authorization-filtered; audit logs only the name length), `get_employee_email`, `get_employee_manager`, `list_direct_reports`, `list_employees`, `get_project_team`, and filters for headcount (role/department/group), exits (role/department), bench duration, new hires, clients (status/industry), and partial project names. Email is returned only by its own tool, with the same access rule as profiles.
 - Scope guard now describes allowed topics by category instead of a field list, so email/manager/direct-report questions are no longer refused before authorization. Clarification replies are merged with the pending question for both the planner and the topic guard. Planner dates use the UTC request date.
 - A coordinator reply that arrives before any planned delegation (a model does this intermittently on long multi-part questions) no longer ends the turn with "I could not finish all planned steps": the discarded text is replaced by the plan's next step, bounded by the number of steps. Previously only a reply after the first step had run was recovered.
